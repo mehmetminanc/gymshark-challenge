@@ -33,7 +33,7 @@ func New() func(ctx context.Context, request events.APIGatewayProxyRequest) (eve
 			}, err
 		}
 
-		if req.Sizes != nil || len(req.Sizes) == 0 {
+		if req.Sizes == nil || len(req.Sizes) == 0 {
 			req.Sizes = defaultSizes
 		}
 
@@ -51,7 +51,17 @@ func New() func(ctx context.Context, request events.APIGatewayProxyRequest) (eve
 			}, err
 		}
 
-		return events.APIGatewayProxyResponse{Body: string(resp), StatusCode: 200}, nil
+		return events.APIGatewayProxyResponse{
+			StatusCode: http.StatusOK,
+			Headers: map[string]string{
+				"Content-Type":                 "text/json",
+				"Access-Control-Allow-Headers": "Content-Type",
+				"Access-Control-Allow-Origin":  "*",
+				"Access-Control-Allow-Methods": "OPTIONS,POST,GET",
+				"X-Content-Type-Options":       "nosniff",
+			},
+			Body: string(resp),
+		}, nil
 	}
 }
 

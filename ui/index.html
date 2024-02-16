@@ -3,14 +3,29 @@
 <head>
     <meta charset="UTF-8">
     <title>Gymshark Challenge - Awesome UI</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.3.1/dist/css/bootstrap.min.css"
+          integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
 </head>
+
 <body>
+<div class="p-6 w-50 mx-auto">
+    <h2>Calculate pack sizes</h2>
 
-<ul>
-    <li>
-
-    </li>
-</ul>
-
+    <form id="order-config">
+        <div class="form-group">
+            <label for="order-count">Count</label>
+            <input id="order-count" type="number" name="order-count" class="form-control" placeholder="501">
+        </div>
+        <div class="form-group">
+            <label for="pack-sizes">Sizes</label>
+            <input id="pack-sizes" type="text" name="pack-sizes" class="form-control"
+                   placeholder="250,500,1000,2000,5000">
+        </div>
+        <button type="submit" class="btn btn-primary">Submit</button>
+    </form>
+</div>
+<div id="result" class="p-6 w-50 mx-auto">
+</div>
+<script src="app.js"></script>
 </body>
 </html>
