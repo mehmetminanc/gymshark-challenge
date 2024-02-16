@@ -9,7 +9,7 @@ This repo contains an AWS SAM backend app and a rudimentary web UI to utilize th
 The API is hosted on AWS APIGW: `https://7rcijo7emg.execute-api.eu-central-1.amazonaws.com/Prod/compute-packs/`
 The curl examples would also work against this endpoint. Please don't call it over 1m times :)
 
-The frontend app is hosted on S3 
+The frontend app is hosted on S3 in `http://gymshark.mminanc.com.s3-website.eu-central-1.amazonaws.com/`
 
 ## Endpoint
 I decided to utilize a single POST endpoint in API GW pointing to the lambda.

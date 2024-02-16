@@ -44,6 +44,9 @@ theForm.addEventListener("submit", e => {
                 resultElm.innerHTML += `<li class="list-group-item">${key}: ${obj[key]}</li>`
             }
             resultElm.innerHTML += '</ul>'
+        })
+        .catch(reason => {
+            resultElm.innerHTML = "error: " + reason
         });
 
 });
