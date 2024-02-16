@@ -408,7 +408,6 @@ $RECYCLE.BIN/
 
 # Code coverage
 cov.xml
-coverage.xml
 
 # Temporary scratch directory used by the tests
 tests/integration/buildcmd/scratch
