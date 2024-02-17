@@ -21,7 +21,7 @@ func Test_validateRequest(t *testing.T) {
 		wantErr bool
 	}{
 		{
-			name: "should return success when order is negative",
+			name: "should return success for happy case",
 			args: args{
 				req: &CalculateRequest{
 					Order: 501,
@@ -41,6 +41,7 @@ func Test_validateRequest(t *testing.T) {
 			},
 			want: events.APIGatewayProxyResponse{
 				StatusCode: http.StatusBadRequest,
+				Headers:    commonHeaders,
 			},
 			wantErr: true,
 		},
@@ -54,6 +55,20 @@ func Test_validateRequest(t *testing.T) {
 			},
 			want: events.APIGatewayProxyResponse{
 				StatusCode: http.StatusBadRequest,
+				Headers:    commonHeaders,
+			},
+			wantErr: true,
+		},
+		{
+			name: "should return 400 when order is too big for the lambda",
+			args: args{
+				req: &CalculateRequest{
+					Order: 1_000_000_000,
+				},
+			},
+			want: events.APIGatewayProxyResponse{
+				StatusCode: http.StatusBadRequest,
+				Headers:    commonHeaders,
 			},
 			wantErr: true,
 		},
@@ -82,19 +97,19 @@ func Test_New(t *testing.T) {
 		wantErr bool
 	}{
 		{
-			name:    "default size",
+			name:    "should handle default size",
 			body:    `{"order": 1002, "sizes": []}`,
 			want:    `{"1000":1, "250":1}`,
 			wantErr: false,
 		},
 		{
-			name:    "custom size",
+			name:    "should handle custom size",
 			body:    `{"order": 1002, "sizes": [1,2,5,10,20,50,100,200]}`,
 			want:    `{"200":5, "2":1}`,
 			wantErr: false,
 		},
 		{
-			name:    "malformed request",
+			name:    "should handle malformed request",
 			body:    `{"order": 1002, "si`,
 			want:    ``,
 			wantErr: true,
