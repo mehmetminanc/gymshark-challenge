@@ -8,7 +8,7 @@
 </head>
 
 <body>
-<div class="p-6 w-50 mx-auto">
+<div class="m-3 p-6 w-50 mx-auto">
     <h2>Calculate pack sizes</h2>
 
     <form id="order-config">
@@ -21,10 +21,14 @@
             <input id="pack-sizes" type="text" name="pack-sizes" class="form-control"
                    placeholder="250,500,1000,2000,5000">
         </div>
-        <button type="submit" class="btn btn-primary">Submit</button>
+        <button id="calculate-button" type="submit" class="btn btn-primary">Calculate</button>
     </form>
 </div>
-<div id="result" class="p-6 w-50 mx-auto">
+<div class="m-3 p-6 w-50 mx-auto">
+    <h3>Results</h3>
+
+    <div id="result" class="">
+    </div>
 </div>
 <script src="app.js"></script>
 </body>
