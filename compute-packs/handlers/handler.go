@@ -32,6 +32,10 @@ type CalculateRequest struct {
 	Sizes []int `json:"sizes,omitempty"`
 }
 
+type ErrorResponse struct {
+	ErrorResponse string `json:"error"`
+}
+
 func New() func(ctx context.Context, request events.APIGatewayProxyRequest) (events.APIGatewayProxyResponse, error) {
 	// similar to http middlewares, initialize dependencies here and use in
 	// returned handler function.
@@ -39,16 +43,24 @@ func New() func(ctx context.Context, request events.APIGatewayProxyRequest) (eve
 		var req CalculateRequest
 		err := json.Unmarshal([]byte(request.Body), &req)
 		if err != nil {
+			body, _ := json.MarshalIndent(ErrorResponse{
+				ErrorResponse: err.Error(),
+			}, "", "  ")
+
 			return events.APIGatewayProxyResponse{
 				StatusCode: http.StatusBadRequest,
-				Body:       err.Error(),
+				Body:       string(body),
 				Headers:    commonHeaders,
 			}, nil
 		}
 
 		response, err := validateRequest(&req)
 		if err != nil {
-			response.Body = err.Error()
+			body, _ := json.MarshalIndent(ErrorResponse{
+				ErrorResponse: err.Error(),
+			}, "", "  ")
+
+			response.Body = string(body)
 			return response, nil
 		}
 

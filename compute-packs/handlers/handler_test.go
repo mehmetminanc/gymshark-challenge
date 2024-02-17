@@ -111,8 +111,8 @@ func Test_New(t *testing.T) {
 		{
 			name:    "should handle malformed request",
 			body:    `{"order": 1002, "si`,
-			want:    ``,
-			wantErr: true,
+			want:    `{"error": "unexpected end of JSON input"}`,
+			wantErr: false,
 		},
 	}
 
