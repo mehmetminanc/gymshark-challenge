@@ -19,7 +19,7 @@ const (
 var (
 	defaultSizes  = []int{250, 500, 1000, 2000, 5000}
 	commonHeaders = map[string]string{
-		"Content-Type":                 "text/json",
+		"Content-Type":                 "application/json",
 		"Access-Control-Allow-Headers": "Content-Type",
 		"Access-Control-Allow-Origin":  "*",
 		"Access-Control-Allow-Methods": "OPTIONS,POST,GET",
@@ -41,12 +41,15 @@ func New() func(ctx context.Context, request events.APIGatewayProxyRequest) (eve
 		if err != nil {
 			return events.APIGatewayProxyResponse{
 				StatusCode: http.StatusBadRequest,
-			}, err
+				Body:       err.Error(),
+				Headers:    commonHeaders,
+			}, nil
 		}
 
-		response, err2 := validateRequest(&req)
-		if err2 != nil {
-			return response, err2
+		response, err := validateRequest(&req)
+		if err != nil {
+			response.Body = err.Error()
+			return response, nil
 		}
 
 		// Execute

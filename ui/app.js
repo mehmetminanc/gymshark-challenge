@@ -53,13 +53,14 @@ theForm.addEventListener("submit", e => {
         })
     })
         .then(response => {
-            return response.json();
+            if (response.status === 200) {
+                return response.json();
+            } else {
+                response.text().then(err => resultElm.innerHTML = "error: " + err)
+            }
         })
         .then(result => {
             listResult(result);
-        })
-        .catch(reason => {
-            resultElm.innerHTML = "error: " + reason
         })
         .finally(unsetLoading);
 });
