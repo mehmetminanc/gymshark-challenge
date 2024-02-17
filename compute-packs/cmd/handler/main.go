@@ -24,10 +24,13 @@ func main() {
 	handler := handlers.New()
 
 	// setup event from cli args or reading from file
-	event := events.APIGatewayProxyRequest{}
+	event := events.APIGatewayProxyRequest{
+		Body: `{"order":1002}`,
+	}
 
-	_, err := handler(ctx, event)
+	resp, err := handler(ctx, event)
 
+	log.Printf(resp.Body)
 	if err != nil {
 		log.Fatal(err.Error())
 	}

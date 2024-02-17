@@ -1,5 +1,6 @@
-const resultElm = document.getElementById("result");
 const API_ENDPOINT = "https://7rcijo7emg.execute-api.eu-central-1.amazonaws.com/Prod/compute-packs";
+
+const resultElm = document.getElementById("result");
 const theForm = document.getElementById("order-config");
 
 theForm.addEventListener("submit", e => {
@@ -38,7 +39,6 @@ theForm.addEventListener("submit", e => {
             return response.json();
         })
         .then(obj => {
-
             resultElm.innerHTML += '<ul class="list-group">'
             for (let key in obj) {
                 resultElm.innerHTML += `<li class="list-group-item">${key}: ${obj[key]}</li>`

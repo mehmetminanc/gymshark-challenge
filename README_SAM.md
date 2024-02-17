@@ -1,11 +1,19 @@
 # go-al2
 
-This is a sample template for Go on Amazon Linux 2 (AL2) - Below is a brief explanation of what we have generated for you:
+This is based off of the go SAM template with some twists.
 
 ```bash
 .
-├── README_SAM.md         <- This file>
-├── hello-world
+├── README_SAM.md                   <- This file>
+├──  compute-packs
+│   ├── internal
+│   │   ├── algo  
+│   │   │   ├── algorithm.go        <- The algorithm>
+│   │   │   └── algorithm_test.go   <- Tests for the algorithm>
+│   │   └── handlers
+│   │       ├── handler.go        <- The lambda handler>
+│   │       └── handler_test.go   <- Tests for the handler>     
+│   ├── handlers
 │   ├── Makefile      <- Make to automate build>
 │   ├── go.mod        <- Dependencies
 │   ├── main.go       <- Lambda function code
@@ -25,10 +33,9 @@ This is a sample template for Go on Amazon Linux 2 (AL2) - Below is a brief expl
 
 ### Installing dependencies & building the target
 
-Install the go lambda module
 
 ```shell
-go get github.com/aws/aws-lambda-go/events
+go get
 ```
 
 In this example we use the built-in `sam build` to automatically download all the dependencies and package our build target.   
@@ -92,56 +99,6 @@ You can find your API Gateway Endpoint URL in the output values displayed after 
 
 ### Testing
 
-We use `testing` package that is built-in in Golang and you can simply run the following command to run our tests:
-
 ```shell
 go test -v ./hello-world/
 ```
-# Appendix
-
-### Golang installation
-
-Please ensure Go 1.x (where 'x' is the latest version) is installed as per the instructions on the official golang website: https://golang.org/doc/install
-
-A quickstart way would be to use Homebrew, chocolatey or your linux package manager.
-
-#### Homebrew (Mac)
-
-Issue the following command from the terminal:
-
-```shell
-brew install golang
-```
-
-If it's already installed, run the following command to ensure it's the latest version:
-
-```shell
-brew update
-brew upgrade golang
-```
-
-#### Chocolatey (Windows)
-
-Issue the following command from the powershell:
-
-```shell
-choco install golang
-```
-
-If it's already installed, run the following command to ensure it's the latest version:
-
-```shell
-choco upgrade golang
-```
-
-## Bringing to the next level
-
-Here are a few ideas that you can use to get more acquainted as to how this overall process works:
-
-* Create an additional API resource (e.g. /hello/{proxy+}) and return the name requested through this new path
-* Update unit test to capture that
-* Package & Deploy
-
-Next, you can use the following resources to know more about beyond hello world samples and how others structure their Serverless applications:
-
-* [AWS Serverless Application Repository](https://aws.amazon.com/serverless/serverlessrepo/)

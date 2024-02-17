@@ -33,23 +33,14 @@ func New() func(ctx context.Context, request events.APIGatewayProxyRequest) (eve
 			}, err
 		}
 
-		if req.Sizes == nil || len(req.Sizes) == 0 {
-			req.Sizes = defaultSizes
-		}
-
-		response, err2 := validateRequest(req)
+		response, err2 := validateRequest(&req)
 		if err2 != nil {
 			return response, err2
 		}
 
 		// Execute
 		packing := algo.ComputePacking(req.Sizes, req.Order)
-		resp, err := json.MarshalIndent(packing, "", "  ")
-		if err != nil {
-			return events.APIGatewayProxyResponse{
-				StatusCode: http.StatusBadRequest,
-			}, err
-		}
+		resp, _ := json.MarshalIndent(packing, "", "  ")
 
 		return events.APIGatewayProxyResponse{
 			StatusCode: http.StatusOK,
@@ -65,8 +56,12 @@ func New() func(ctx context.Context, request events.APIGatewayProxyRequest) (eve
 	}
 }
 
-func validateRequest(req CalculateRequest) (events.APIGatewayProxyResponse, error) {
+func validateRequest(req *CalculateRequest) (events.APIGatewayProxyResponse, error) {
 	// Validate
+	if req.Sizes == nil || len(req.Sizes) == 0 {
+		req.Sizes = defaultSizes
+	}
+
 	if req.Order <= 0 {
 		return events.APIGatewayProxyResponse{
 			StatusCode: http.StatusBadRequest,

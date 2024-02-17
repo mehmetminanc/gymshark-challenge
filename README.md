@@ -21,6 +21,7 @@ Curl examples can be found below.
 It is intentionally left blank as the SAM CLI takes care of spinning up a local lambda environment. Execute 
 
 ```shell
+sam build
 sam local start-api
 ```
 to start up a local stack. To test if everything is in order, execute
