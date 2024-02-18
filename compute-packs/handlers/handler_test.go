@@ -3,7 +3,6 @@ package handlers
 import (
 	"context"
 	"net/http"
-	"reflect"
 	"testing"
 
 	"github.com/aws/aws-lambda-go/events"
@@ -17,7 +16,6 @@ func Test_validateRequest(t *testing.T) {
 	tests := []struct {
 		name    string
 		args    args
-		want    events.APIGatewayProxyResponse
 		wantErr bool
 	}{
 		{
@@ -28,7 +26,6 @@ func Test_validateRequest(t *testing.T) {
 					Sizes: []int{250, 500, 1000},
 				},
 			},
-			want:    events.APIGatewayProxyResponse{},
 			wantErr: false,
 		},
 		{
@@ -38,10 +35,6 @@ func Test_validateRequest(t *testing.T) {
 					Order: 501,
 					Sizes: []int{250, -500, 1000},
 				},
-			},
-			want: events.APIGatewayProxyResponse{
-				StatusCode: http.StatusBadRequest,
-				Headers:    commonHeaders,
 			},
 			wantErr: true,
 		},
@@ -53,10 +46,6 @@ func Test_validateRequest(t *testing.T) {
 					Sizes: []int{},
 				},
 			},
-			want: events.APIGatewayProxyResponse{
-				StatusCode: http.StatusBadRequest,
-				Headers:    commonHeaders,
-			},
 			wantErr: true,
 		},
 		{
@@ -66,23 +55,16 @@ func Test_validateRequest(t *testing.T) {
 					Order: 1_000_000_000,
 				},
 			},
-			want: events.APIGatewayProxyResponse{
-				StatusCode: http.StatusBadRequest,
-				Headers:    commonHeaders,
-			},
 			wantErr: true,
 		},
 	}
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			got, err := validateRequest(tt.args.req)
+			err := tt.args.req.validateRequest()
 			if (err != nil) != tt.wantErr {
 				t.Errorf("validateRequest() error = %v, wantErr %v", err, tt.wantErr)
 				return
-			}
-			if !reflect.DeepEqual(got, tt.want) {
-				t.Errorf("validateRequest() got = %v, want %v", got, tt.want)
 			}
 		})
 	}
@@ -112,6 +94,12 @@ func Test_New(t *testing.T) {
 			name:    "should handle malformed request",
 			body:    `{"order": 1002, "si`,
 			want:    `{"error": "unexpected end of JSON input"}`,
+			wantErr: false,
+		},
+		{
+			name:    "should handle invalid request",
+			body:    `{"order": -1002}`,
+			want:    `{"error":"order can't be 0 or below: -1002"}`,
 			wantErr: false,
 		},
 	}

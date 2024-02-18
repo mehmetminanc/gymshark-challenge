@@ -17,8 +17,8 @@ const (
 )
 
 var (
-	defaultSizes  = []int{250, 500, 1000, 2000, 5000}
-	commonHeaders = map[string]string{
+	defaultSizes = []int{250, 500, 1000, 2000, 5000}
+	corsHeaders  = map[string]string{
 		"Content-Type":                 "application/json",
 		"Access-Control-Allow-Headers": "Content-Type",
 		"Access-Control-Allow-Origin":  "*",
@@ -27,9 +27,32 @@ var (
 	}
 )
 
+// CalculateRequest input object
 type CalculateRequest struct {
 	Order int   `json:"order,omitempty"`
 	Sizes []int `json:"sizes,omitempty"`
+}
+
+// validateRequest apply defaults and validate request
+func (req *CalculateRequest) validateRequest() error {
+	// Apply defaults
+	if req.Sizes == nil || len(req.Sizes) == 0 {
+		req.Sizes = defaultSizes
+	}
+
+	// Validate
+	if req.Order <= 0 {
+		return fmt.Errorf("order can't be 0 or below: %d", req.Order)
+	}
+
+	if req.Order > upperLimit { // Another 0 and we are out of mem.
+		return fmt.Errorf("order can't be above %d, it was %d", upperLimit, req.Order)
+	}
+
+	if slices.Min(req.Sizes) <= 0 { // Everything shall be positive
+		return fmt.Errorf("no pack size can be 0 or below: %d", req.Order)
+	}
+	return nil
 }
 
 type ErrorResponse struct {
@@ -43,25 +66,12 @@ func New() func(ctx context.Context, request events.APIGatewayProxyRequest) (eve
 		var req CalculateRequest
 		err := json.Unmarshal([]byte(request.Body), &req)
 		if err != nil {
-			body, _ := json.MarshalIndent(ErrorResponse{
-				ErrorResponse: err.Error(),
-			}, "", "  ")
-
-			return events.APIGatewayProxyResponse{
-				StatusCode: http.StatusBadRequest,
-				Body:       string(body),
-				Headers:    commonHeaders,
-			}, nil
+			return failure(err)
 		}
 
-		response, err := validateRequest(&req)
+		err = req.validateRequest()
 		if err != nil {
-			body, _ := json.MarshalIndent(ErrorResponse{
-				ErrorResponse: err.Error(),
-			}, "", "  ")
-
-			response.Body = string(body)
-			return response, nil
+			return failure(err)
 		}
 
 		// Execute
@@ -70,34 +80,20 @@ func New() func(ctx context.Context, request events.APIGatewayProxyRequest) (eve
 
 		return events.APIGatewayProxyResponse{
 			StatusCode: http.StatusOK,
-			Headers:    commonHeaders,
+			Headers:    corsHeaders,
 			Body:       string(resp),
 		}, nil
 	}
 }
 
-func validateRequest(req *CalculateRequest) (events.APIGatewayProxyResponse, error) {
-	// Apply defaults
-	if req.Sizes == nil || len(req.Sizes) == 0 {
-		req.Sizes = defaultSizes
-	}
+func failure(err error) (events.APIGatewayProxyResponse, error) {
+	body, _ := json.MarshalIndent(ErrorResponse{
+		ErrorResponse: err.Error(),
+	}, "", "  ")
 
-	// Validate
-	errResp := events.APIGatewayProxyResponse{
+	return events.APIGatewayProxyResponse{
 		StatusCode: http.StatusBadRequest,
-		Headers:    commonHeaders,
-	}
-
-	if req.Order <= 0 {
-		return errResp, fmt.Errorf("order can't be 0 or below: %d", req.Order)
-	}
-
-	if req.Order > upperLimit { // Another 0 and we are out of mem.
-		return errResp, fmt.Errorf("order can't be above %d, it was %d", upperLimit, req.Order)
-	}
-
-	if slices.Min(req.Sizes) <= 0 {
-		return errResp, fmt.Errorf("no pack size can be 0 or below: %d", req.Order)
-	}
-	return events.APIGatewayProxyResponse{}, nil
+		Body:       string(body),
+		Headers:    corsHeaders,
+	}, nil
 }
